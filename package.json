@@ -4,7 +4,7 @@
   "description": "> **High-performance, DuckDB-based importer to query TOSEC databases at light speed.**",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "pytest",
     "prepare": "husky"
   },
   "repository": {
