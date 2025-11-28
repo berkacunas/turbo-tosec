@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['src\\tosec_importer.py'],
+    ['src/tosec_importer.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['duckdb'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
