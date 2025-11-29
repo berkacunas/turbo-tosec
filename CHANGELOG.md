@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/berkacunas/turbo-tosec/compare/v1.2.1...v1.2.2) (2025-11-29)
+
+
+### Bug Fixes
+
+* replace git token for workflow conflict ([0295e53](https://github.com/berkacunas/turbo-tosec/commit/0295e53240f40b64ccd8deac094114021fffe09c))
+
 ## [1.2.1](https://github.com/berkacunas/turbo-tosec/compare/v1.2.0...v1.2.1) (2025-11-28)
 
 
