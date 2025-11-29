@@ -112,7 +112,7 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
 
 ## ❤️ Projeyi Destekleyin
 
-Glyph (ve turbo-tosec), bağımsız bir geliştirici tarafından geliştirilmekte ve sürdürülmektedir. Eğer bu aracı faydalı bulduysanız ve geliştirmeyi desteklemek (veya sadece hazır derlenmiş `.exe` için teşekkür etmek) isterseniz, lütfen bağış yapmayı düşünün\!
+turbo-tosec, bağımsız bir geliştirici tarafından geliştirilmekte ve sürdürülmektedir. Eğer bu aracı faydalı bulduysanız ve geliştirmeyi desteklemek (veya sadece hazır derlenmiş `.exe` için teşekkür etmek) isterseniz, bağış yaparak destek olabilirsiniz\!
 
 \<a href="[https://github.com/sponsors/berkacunas](https://github.com/sponsors/berkacunas)"\>
 \<img src="[https://img.shields.io/badge/Sponsor-GitHub-pink?style=for-the-badge\&logo=github-sponsors](https://img.shields.io/badge/Sponsor-GitHub-pink?style=for-the-badge&logo=github-sponsors)" height="50" alt="GitHub'da Sponsor Ol"\>
