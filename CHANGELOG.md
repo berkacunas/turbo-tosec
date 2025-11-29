@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/berkacunas/turbo-tosec/compare/v1.3.0...v1.3.1) (2025-11-29)
+
+
+### Bug Fixes
+
+* **build:** force include uuid and xml modules in hiddenimports to prevent runtime crash ([f2c71de](https://github.com/berkacunas/turbo-tosec/commit/f2c71de6afed485d0f1d61ba2627d47aa559502a))
+
 # [1.3.0](https://github.com/berkacunas/turbo-tosec/compare/v1.2.2...v1.3.0) (2025-11-29)
 
 
