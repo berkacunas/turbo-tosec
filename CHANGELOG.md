@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/berkacunas/turbo-tosec/compare/v1.2.2...v1.3.0) (2025-11-29)
+
+
+### Features
+
+* **cli:** add --about command to explain safety philosophy and usage ([b0a1c4b](https://github.com/berkacunas/turbo-tosec/commit/b0a1c4bcf3319398c7f6699b92b7494f75e293ee))
+
 ## [1.2.2](https://github.com/berkacunas/turbo-tosec/compare/v1.2.1...v1.2.2) (2025-11-29)
 
 
