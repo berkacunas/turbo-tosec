@@ -1,8 +1,10 @@
 name: Build and Upload Binaries
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -10,6 +12,7 @@ permissions:
 jobs:
   # --- WINDOWS BUILD ---
   build-windows:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build Windows EXE
     runs-on: windows-latest
     
@@ -46,6 +49,7 @@ jobs:
 
   # --- LINUX BUILD ---
   build-linux:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build Linux Binary
     runs-on: ubuntu-22.04 # for GLIBC compatibility
     

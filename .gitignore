@@ -28,3 +28,6 @@ yarn-error.log
 # Copilot templates
 COMMIT_MESSAGES/
 ISSUE/
+
+build/
+dist/
