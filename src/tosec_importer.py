@@ -110,7 +110,6 @@ def parse_dat_file(file_path: str) -> List[Tuple]:
     """
     rows = []
     
-    
     dat_filename = os.path.basename(file_path)
     try:
         system_name = os.path.basename(os.path.dirname(file_path))
@@ -138,15 +137,38 @@ def parse_dat_file(file_path: str) -> List[Tuple]:
 def main():
 
     parser = argparse.ArgumentParser(description="Imports TOSEC DAT files into DuckDB database.")
-    parser.add_argument("--input", "-i", required=True, help="The main directory path where the TOSEC DAT files are located.")
+    parser.add_argument("--input", "-i", help="The main directory path where the TOSEC DAT files are located.")
     parser.add_argument("--output", "-o", default="tosec.duckdb", help="Name/path of the DuckDB file to be created.")
     parser.add_argument("--workers", "-w", type=int, default=1, help="Number of worker threads (Default: 1). Tip: Use 0 to auto-detect CPU count.")
     parser.add_argument("--batch-size", "-b", type=int, default=1000, help="Number of rows to insert per batch transaction (Default: 1000).")
-    parser.add_argument("--no-open-log", action="store_false", dest="open_log", default=True,
-                        help="Do NOT automatically open the log file if errors occur.")
+    parser.add_argument("--no-open-log", action="store_false", dest="open_log", default=True, help="Do NOT automatically open the log file if errors occur.")
+    parser.add_argument("--about", action="store_true", help="Show program information, philosophy, and safety defaults.")
     
     args = parser.parse_args()
     
+    if args.about:
+        print(f"""
+ *** turbo-tosec v{__version__ if '__version__' in globals() else '1.2.2'} ***
+ A high-performance, DuckDB-based importer for TOSEC DAT collections.
+
+ ** SAFETY FIRST PHILOSOPHY
+ This tool is designed to handle massive datasets without freezing your
+ system. By default, it runs in **SINGLE-THREADED (SAFE) MODE**.
+
+ We respect your hardware limits. We do not auto-detect your CPU cores
+ to prevent system unresponsiveness during large imports.
+
+ ** WANT SPEED? (TURBO MODE)
+ If you want to unleash the full power of your CPU, you must explicitly
+ ask for it by using the '--workers' (or '-w') flag.
+ 
+ Example: python tosec_importer.py -i "..." -w 8
+""")
+        return
+    
+    if not args.input:
+        parser.error("the following arguments are required: --input/-i")
+        
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     
     os.makedirs("logs", exist_ok=True)

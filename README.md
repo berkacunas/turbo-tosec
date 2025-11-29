@@ -109,7 +109,7 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
 --- 
 ## ❤️ Support the Project
 
-Glyph is developed and maintained by an independent developer. If you find this tool useful and want to support its continued development (or simply want to say thanks for the pre-built `.exe`), please consider making a donation!
+turbo-tosec is developed and maintained by an independent developer. If you find this tool useful and want to support its continued development (or simply want to say thanks for the pre-built `.exe`), please consider making a donation!
 
 <a href="https://github.com/sponsors/berkacunas">
   <img src="https://img.shields.io/badge/Sponsor-GitHub-pink?style=for-the-badge&logo=github-sponsors" height="50" alt="Sponsor on GitHub">
