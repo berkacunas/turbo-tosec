@@ -42,11 +42,12 @@ import xml.etree.ElementTree as ET
 from typing import List, Tuple, Optional
 import duckdb
 from tqdm import tqdm 
+import threading
 import concurrent.futures
 import logging
 import subprocess
 import platform
-from turbo_tosec._version import __version__
+from _version import __version__
 
 
 def setup_logging(log_file: str):
@@ -206,33 +207,42 @@ def main():
             total_roms += len(buffer)
             buffer.clear()
     
-    # --- PROCESSING LOGIC ---
-    if args.workers < 2:
-        # ### SERIAL MODE (Default) ###
-        # No overhead of threading, best for debugging or small tasks.
+    try:
+        # --- PROCESSING LOGIC ---
         with tqdm(total=count_files, unit="file") as pbar:
-            for file_path in all_dat_files:
-                try:
-                    data = parse_dat_file(file_path)
-                    if data:
-                        buffer.extend(data)
-                        if len(buffer) >= args.batch_size:
-                            flush_buffer()
-                except Exception as exc:
-                    error_count += 1
-                    logging.error(f"FAILED: (Serial) {file_path} -> {exc}")
+            stop_monitor = threading.Event()
+            
+            def monitor_progress():
+                while not stop_monitor.is_set():
+                    time.sleep(1)
+                    pbar.refresh()
                     
-                stats = {"ROMs": total_roms}
-                if error_count > 0:
-                    stats["Errors"] = error_count
-                
-                pbar.set_postfix(stats)
-                pbar.update(1)
-    else:
-        # ### PARALLEL MODE (Turbo) ###
-        # Workers parse XML, Main Thread writes to DB.
-        try:
-            with tqdm(total=count_files, unit="file") as pbar:
+            monitor_thread = threading.Thread(target=monitor_progress, daemon=True)
+            monitor_thread.start()
+            
+            # ### SERIAL MODE (Default) ###
+            # No overhead of threading, best for debugging or small tasks.
+            if args.workers < 2:
+                for file_path in all_dat_files:
+                    try:
+                        data = parse_dat_file(file_path)
+                        if data:
+                            buffer.extend(data)
+                            if len(buffer) >= args.batch_size:
+                                flush_buffer()
+                    except Exception as exc:
+                        error_count += 1
+                        logging.error(f"FAILED: (Serial) {file_path} -> {exc}")
+                        
+                    stats = {"ROMs": total_roms}
+                    if error_count > 0:
+                        stats["Errors"] = error_count
+                    
+                    pbar.set_postfix(stats)
+                    pbar.update(1)
+            else:
+                # ### PARALLEL MODE (Turbo) ###
+                # Workers parse XML, Main Thread writes to DB.
                 with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
                     # Submit all tasks
                     future_to_file = {executor.submit(parse_dat_file, f): f for f in all_dat_files}
@@ -257,20 +267,23 @@ def main():
                         
                         pbar.set_postfix(stats)
                         pbar.update(1)
+        
+            stop_monitor.set()
+            monitor_thread.join()
 
-        except KeyboardInterrupt:
-            print("\n🛑 Process interrupted by user.")
-            return
-        # Critical system errors
-        except (RuntimeError, MemoryError) as e:
-            print(f"\n\n❌ CRITICAL ERROR: System resources exhausted!")
-            print(f"   Details: {e}")
-            print(f"   👉 Tip: Try reducing --workers (current: {args.workers}) or --batch-size (current: {args.batch_size}).")
-            print("   Exiting safely to prevent crash...")
-            return
-        except Exception as e:
-            print(f"\n❌ Critical Error: {e}")
-            return
+    except KeyboardInterrupt:
+        print("\n🛑 Process interrupted by user.")
+        return
+    # Critical system errors
+    except (RuntimeError, MemoryError) as e:
+        print(f"\n\n❌ CRITICAL ERROR: System resources exhausted!")
+        print(f"   Details: {e}")
+        print(f"   👉 Tip: Try reducing --workers (current: {args.workers}) or --batch-size (current: {args.batch_size}).")
+        print("   Exiting safely to prevent crash...")
+        return
+    except Exception as e:
+        print(f"\n❌ Critical Error: {e}")
+        return
         
     # Final flush for remaining items
     flush_buffer()
