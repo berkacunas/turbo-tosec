@@ -1,3 +1,10 @@
+## [1.3.6](https://github.com/berkacunas/turbo-tosec/compare/v1.3.5...v1.3.6) (2025-11-30)
+
+
+### Bug Fixes
+
+* **importer:** restore missing package name in import statement ([bdd7a5d](https://github.com/berkacunas/turbo-tosec/commit/bdd7a5d9ef61e7c9065369754ec9bba3a77859bc))
+
 ## [1.3.5](https://github.com/berkacunas/turbo-tosec/compare/v1.3.4...v1.3.5) (2025-11-30)
 
 
