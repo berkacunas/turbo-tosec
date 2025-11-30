@@ -1,8 +1,8 @@
 import os
 import pytest
 import duckdb
-from src.tosec_importer import parse_dat_file, create_database
-from src._version import __version__
+from tosec_importer import parse_dat_file, create_database
+from version import __version__
 
 SAMPLE_DAT_XML = """<?xml version="1.0"?>
 <datafile>

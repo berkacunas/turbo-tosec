@@ -39,7 +39,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "echo \"__version__ = '${nextRelease.version}'\" > src/_version.py && sed -i 's/turbo-tosec_v[0-9.]*/turbo-tosec_v${nextRelease.version}/g' README.md README.tr.md"
+          "prepareCmd": "echo \"__version__ = '${nextRelease.version}'\" > src/turbo_tosec/_version.py && sed -i 's/turbo-tosec_v[0-9.]*/turbo-tosec_v${nextRelease.version}/g' README.md README.tr.md"
         }
       ],
       [

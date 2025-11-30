@@ -16,4 +16,4 @@ dependencies = [
 requires-python = ">=3.10"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src/turbo-tosec"]
