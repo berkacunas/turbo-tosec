@@ -16,8 +16,8 @@ Designed for archivists and retro gaming enthusiasts, it transforms piles of hun
 
 If you don't want to install Python, simply download the standalone executable for your OS:
 
-* **Windows:** [Download `turbo-tosec_v1.2.2_Windows.exe`](https://github.com/berkacunas/turbo-tosec/releases/latest)
-* **Linux:** [Download `turbo-tosec_v1.2.2_Linux.tar.gz`](https://github.com/berkacunas/turbo-tosec/releases/latest)
+* **Windows:** [Download `turbo-tosec_v1.3.3_Windows.exe`](https://github.com/berkacunas/turbo-tosec/releases/latest)
+* **Linux:** [Download `turbo-tosec_v1.3.3_Linux.tar.gz`](https://github.com/berkacunas/turbo-tosec/releases/latest)
 
 ---
 

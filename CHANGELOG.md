@@ -1,3 +1,11 @@
+## [1.3.3](https://github.com/berkacunas/turbo-tosec/compare/v1.3.2...v1.3.3) (2025-11-30)
+
+
+### Bug Fixes
+
+* **ci:** add missing @semantic-release/exec dependency ([77e0f2a](https://github.com/berkacunas/turbo-tosec/commit/77e0f2ae5d85666b75393e725856b54c016eceb2))
+* fix README.tr.md filename ([634d92e](https://github.com/berkacunas/turbo-tosec/commit/634d92e9e9ddb749760d8570317704804fa73772))
+
 ## [1.3.2](https://github.com/berkacunas/turbo-tosec/compare/v1.3.1...v1.3.2) (2025-11-29)
 
 
