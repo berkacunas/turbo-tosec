@@ -69,9 +69,15 @@ jobs:
       - name: Rename & Prepare
         run: |
           cd dist
-          # Filename: turbo-tosec_v1.0.0_Linux
-          mv turbo-tosec turbo-tosec_${{ github.event.release.tag_name }}_Linux
-          tar -czvf turbo-tosec_${{ github.event.release.tag_name }}_Linux.tar.gz turbo-tosec_${{ github.event.release.tag_name }}_Linux
+          DirectoryName=turbo-tosec_${{ github.event.release.tag_name }}_Linux
+          mkdir $DirectoryName
+          mv turbo-tosec $DirectoryName/
+          tar -czvf ${DirectoryName}.tar.gz $DirectoryName
+
+          # (Optional) Put binary file in a directory if needed
+          # mv turbo-tosec $FOLDER_NAME/turbo-tosec
+          # (Optional) Add more files into the directory if needed
+          # cp ../README.md $FOLDER_NAME/
 
       - name: Upload Linux Asset
         uses: softprops/action-gh-release@v2
