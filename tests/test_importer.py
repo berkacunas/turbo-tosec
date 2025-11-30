@@ -2,7 +2,7 @@ import os
 import pytest
 import duckdb
 from tosec_importer import parse_dat_file, create_database
-from version import __version__
+from _version import __version__
 
 SAMPLE_DAT_XML = """<?xml version="1.0"?>
 <datafile>
