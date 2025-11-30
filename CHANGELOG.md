@@ -1,3 +1,10 @@
+## [1.3.5](https://github.com/berkacunas/turbo-tosec/compare/v1.3.4...v1.3.5) (2025-11-30)
+
+
+### Performance Improvements
+
+* **importer:** add dedicated thread for progress bar timer updates ([37ed9a6](https://github.com/berkacunas/turbo-tosec/commit/37ed9a65e94bbd11e1640d612b99598e6964ba78))
+
 ## [1.3.4](https://github.com/berkacunas/turbo-tosec/compare/v1.3.3...v1.3.4) (2025-11-30)
 
 
