@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['src/turbo-tosec/tosec_importer.py'],
+    ['src/turbo_tosec/tosec_importer.py'],
     pathex=[],
     binaries=[],
     datas=[],
