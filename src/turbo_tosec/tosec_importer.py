@@ -46,7 +46,7 @@ import concurrent.futures
 import logging
 import subprocess
 import platform
-from _version import __version__
+from turbo_tosec._version import __version__
 
 
 def setup_logging(log_file: str):
