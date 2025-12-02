@@ -33,3 +33,12 @@ ISSUE/
 dist/
 build/
 *.egg-info/
+
+# local test files
+TEST_DATS/
+
+# artifact of debugging
+logs/
+
+# for a temporary time, ignore test_resume.py
+tests/test_resume.py

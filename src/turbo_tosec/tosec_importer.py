@@ -34,6 +34,7 @@ Author: Depones Studio
 License: GPL v3
 """
 import os
+import re
 import sys
 from datetime import datetime
 import time
@@ -76,9 +77,9 @@ def create_database(db_path: str):
     
     conn = duckdb.connect(db_path)
     
-    conn.execute("DROP TABLE IF EXISTS roms")
+    # Main ROMs table
     conn.execute("""
-        CREATE TABLE roms (
+        CREATE TABLE IF NOT EXISTS roms (
             dat_filename VARCHAR,
             platform VARCHAR,
             game_name VARCHAR,
@@ -92,7 +93,31 @@ def create_database(db_path: str):
             system VARCHAR
         )
     """)
+    
+    # Processed files tracking table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS processed_files (
+            filename VARCHAR PRIMARY KEY,
+            processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Metadata table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS db_metadata (
+            key VARCHAR PRIMARY KEY,
+            value VARCHAR
+        )
+    """)
+    
     return conn
+
+def extract_tosec_version(path: str) -> str:
+    # Example pattern: TOSEC-v2023-08-15
+    match = re.search(r"(TOSEC-v\d{4}-\d{2}-\d{2})", path, re.IGNORECASE)
+    if match:
+        return match.group(1)
+    return "Unknown"
 
 def get_dat_files(root_dir: str) -> List[str]:
     
@@ -143,6 +168,8 @@ def main():
     parser.add_argument("--output", "-o", default="tosec.duckdb", help="Name/path of the DuckDB file to be created.")
     parser.add_argument("--workers", "-w", type=int, default=1, help="Number of worker threads (Default: 1). Tip: Use 0 to auto-detect CPU count.")
     parser.add_argument("--batch-size", "-b", type=int, default=1000, help="Number of rows to insert per batch transaction (Default: 1000).")
+    parser.add_argument("--resume", action="store_true", help="Automatically resume if database exists (skip prompt).")
+    parser.add_argument("--force-new", action="store_true", help="Force overwrite existing database (skip prompt).")
     parser.add_argument("--no-open-log", action="store_false", dest="open_log", default=True, help="Do NOT automatically open the log file if errors occur.")
     parser.add_argument("--about", action="store_true", help="Show program information, philosophy, and safety defaults.")
     parser.add_argument("--version", "-v", action="version", version=f"{__version__ if '__version__' in globals() else '1.2.2'}")
@@ -189,8 +216,88 @@ def main():
         print("❌ No .dat file found. Exiting.")
         return
 
-    conn = create_database(args.output)
+    current_version = extract_tosec_version(args.input)
+    print(f"🔖 Detected TOSEC version: {current_version}")
     
+    db_exists = os.path.exists(args.output)
+    conn = create_database(args.output)
+
+    resume_mode = False
+    if db_exists:
+        # Check metadata for TOSEC version
+        stored_version = None
+        try:
+            result = conn.execute("SELECT value FROM db_metadata WHERE key = 'tosec_version'").fetchone()
+            if result:
+                stored_version = result[0]
+        except:
+            pass
+        
+        # Check version mismatch
+        if stored_version and stored_version != current_version:
+            print(f"\n⚠️  WARNING: TOSEC version mismatch!")
+            print(f"   Database belongs to: {stored_version}")
+            print(f"   Input directory is:  {current_version}")
+            print("   Mixing versions creates a corrupted archive.")
+            
+            q = input("❓ Start FRESH and wipe old database? (Required for new version) [y/N]: ").lower()
+            if q != 'y':
+                print("🛑 Operation aborted to protect data.")
+                conn.close()
+                return
+            # User agreed to wipe old DB
+            print("🧹 Wiping old database and starting FRESH import...")
+            resume_mode = False
+            
+        else:
+            # Version matches or version unknown, resumable ?
+            processed_count = conn.execute("SELECT COUNT(*) FROM processed_files").fetchone()[0]
+            
+            if processed_count > 0:
+                # Flag Control 
+                if args.resume:
+                    print(f"🔄 --resume detected. Resuming import. ({processed_count} files already processed)")
+                    resume_mode = True
+                elif args.force_new:
+                    print("💥 --force-new detected. Wiping old database.")
+                    resume_mode = False
+                else:
+                    # Interactive Mode (Ask User)
+                    print(f"\nFound existing database with {processed_count} processed files.")
+                    q = input("❓ [R]esume interrupted import or [S]tart fresh? [R/s]: ").lower()
+                    resume_mode = q == 'r'
+            
+    files_to_process = []
+    
+    if not resume_mode:
+        print("🧹 Wiping database for fresh import...")
+        conn.execute("DELETE FROM roms")
+        conn.execute("DELETE FROM processed_files")
+        conn.execute("DELETE FROM db_metadata") # Reset metadata
+        
+        # Save current TOSEC version
+        conn.execute("INSERT INTO db_metadata VALUES ('tosec_version', ?)", (current_version,))
+        
+        files_to_process = all_dat_files
+    else:
+        # Resume mode: skip already processed files
+        print("🔍 Calculating resume list...")
+        result = conn.execute("SELECT filename FROM processed_files").fetchall()
+        processed_set = {row[0] for row in result}
+        
+        # Take files not in processed_set
+        files_to_process = [f for f in all_dat_files if os.path.basename(f) not in processed_set]
+        
+        skipped_count = len(all_dat_files) - len(files_to_process)
+        print(f"⏩ Resuming: {skipped_count} files skipped. {len(files_to_process)} remaining.")
+
+    if not files_to_process:
+        print("✨ All files are already processed! Nothing to do.")
+        conn.close()
+        return
+    
+    count_files = len(files_to_process) # for progress bar
+
     total_roms = 0
     error_count = 0
     if args.workers == 0: 
@@ -204,11 +311,19 @@ def main():
         nonlocal total_roms
         if buffer:
             conn.executemany("""INSERT INTO roms VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", buffer)
+            
+            unique_files = {row[0] for row in buffer}
+            
+            for filename in unique_files:
+                # Hata vermeden ekle (Varsa atla)
+                # DuckDB'de 'INSERT OR IGNORE' yerine 'INSERT OR IGNORE INTO' çalışır
+                conn.execute("INSERT OR IGNORE INTO processed_files (filename) VALUES (?)", (filename,))
+            
             total_roms += len(buffer)
             buffer.clear()
     
     try:
-        # --- PROCESSING LOGIC ---
+        # Processing logic 
         with tqdm(total=count_files, unit="file") as pbar:
             stop_monitor = threading.Event()
             
@@ -220,10 +335,10 @@ def main():
             monitor_thread = threading.Thread(target=monitor_progress, daemon=True)
             monitor_thread.start()
             
-            # ### SERIAL MODE (Default) ###
+            # Serial Mode (by default)
             # No overhead of threading, best for debugging or small tasks.
             if args.workers < 2:
-                for file_path in all_dat_files:
+                for file_path in files_to_process:
                     try:
                         data = parse_dat_file(file_path)
                         if data:
@@ -245,7 +360,7 @@ def main():
                 # Workers parse XML, Main Thread writes to DB.
                 with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
                     # Submit all tasks
-                    future_to_file = {executor.submit(parse_dat_file, f): f for f in all_dat_files}
+                    future_to_file = {executor.submit(parse_dat_file, f): f for f in files_to_process}
                     
                     # Process results as they complete
                     for future in concurrent.futures.as_completed(future_to_file):
