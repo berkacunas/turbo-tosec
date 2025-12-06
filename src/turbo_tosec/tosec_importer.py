@@ -148,6 +148,7 @@ def parse_dat_file(file_path: str) -> List[Tuple]:
     
 def parse_xml_dat_file(file_path: str) -> List[Tuple]:
    
+    print("Reading from xml file...")
     rows = []
     dat_filename = os.path.basename(file_path)
     try:
@@ -232,6 +233,8 @@ def parse_cmp_dat_file(file_path: str) -> List[Tuple]:
     Parses a legacy CMP format DAT file using Regex.
     Returns a list of tuples compatible with the main DB schema.
     """
+    print("Reading from cmp file...")
+    
     rows = []
     dat_filename = os.path.basename(file_path)
     
