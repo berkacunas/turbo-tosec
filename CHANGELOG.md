@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/berkacunas/turbo-tosec/compare/v1.6.0...v1.7.0) (2025-12-06)
+
+
+### Features
+
+* add parquet support ([29cb322](https://github.com/berkacunas/turbo-tosec/commit/29cb322037c273fe305d0b5c7d6497fa503acc7e))
+
 # [1.6.0](https://github.com/berkacunas/turbo-tosec/compare/v1.5.0...v1.6.0) (2025-12-03)
 
 
