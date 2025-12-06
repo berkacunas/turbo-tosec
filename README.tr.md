@@ -16,8 +16,8 @@ Arşivciler ve retro oyun tutkunları için tasarlanan bu araç, yüz binlerce X
 
 Python kurmakla uğraşmak istemiyorsanız, işletim sisteminiz için hazır çalıştırılabilir dosyayı indirebilirsiniz:
 
-  * **Windows:** [`turbo-tosec_v1.7.1_Windows.exe` İndir](https://www.google.com/search?q=%5Bhttps://github.com/berkacunas/turbo-tosec/releases/latest%5D\(https://github.com/berkacunas/turbo-tosec/releases/latest\))
-  * **Linux:** [`turbo-tosec_v1.7.1_Linux.tar.gz` İndir](https://www.google.com/search?q=%5Bhttps://github.com/berkacunas/turbo-tosec/releases/latest%5D\(https://github.com/berkacunas/turbo-tosec/releases/latest\))
+  * **Windows:** [`turbo-tosec_v1.8.0_Windows.exe` İndir](https://www.google.com/search?q=%5Bhttps://github.com/berkacunas/turbo-tosec/releases/latest%5D\(https://github.com/berkacunas/turbo-tosec/releases/latest\))
+  * **Linux:** [`turbo-tosec_v1.8.0_Linux.tar.gz` İndir](https://www.google.com/search?q=%5Bhttps://github.com/berkacunas/turbo-tosec/releases/latest%5D\(https://github.com/berkacunas/turbo-tosec/releases/latest\))
 
 -----
 

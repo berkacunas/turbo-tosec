@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/berkacunas/turbo-tosec/compare/v1.7.1...v1.8.0) (2025-12-06)
+
+
+### Features
+
+* add ClrMamePro (CMP) DAT files ([d6ca21d](https://github.com/berkacunas/turbo-tosec/commit/d6ca21da5305b7d8434ead2f73a75d1c39353ea9))
+
 ## [1.7.1](https://github.com/berkacunas/turbo-tosec/compare/v1.7.0...v1.7.1) (2025-12-06)
 
 
