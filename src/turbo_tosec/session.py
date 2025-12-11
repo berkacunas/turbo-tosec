@@ -109,6 +109,11 @@ class ImportSession:
                 self._process_result(data, file_path, pbar)
                 
             except Exception as error:
+                error_msg = str(error).lower()
+                # If disk is full or read-only, stop the program
+                if "not enough space" in error_msg or "read-only file system" in error_msg:
+                    raise OSError("CRITICAL: Disk is full or not writable!") from error
+                
                 self.error_count += 1
                 logging.error(f"Failed (Serial): {file_path} -> {error}")
 
@@ -125,5 +130,12 @@ class ImportSession:
                     self._process_result(data, file_path, pbar)
                     
                 except Exception as error:
+                    error_msg = str(error).lower()
+                    # If disk is full or read-only, stop the program
+                    if "not enough space" in error_msg or "read-only file system" in error_msg:
+                        # Try to shut down the thread pool immediately
+                        executor.shutdown(wait=False, cancel_futures=True)
+                        raise OSError("CRITICAL: Disk is full or not writable!") from error
+                
                     self.error_count += 1
                     logging.error(f"Failed: {file_path} -> {error}")

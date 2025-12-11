@@ -78,16 +78,13 @@ def extract_tosec_version(path: str) -> str:
         return match.group(1)
     return "Unknown"
 
-def run_scan_mode(args):
+def run_scan_mode(args, log_filename: str):
     """
     Orchestrates the scanning process using the new OOP architecture.
     """
     # 1. Setting up logging
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    os.makedirs("logs", exist_ok=True)
-    log_filename = os.path.join("logs", f"tosec_import_log_{timestamp}.log")
     setup_logging(log_filename)
-    
+
     start_time = time.time()
     
     # 2. Scan for .dat files
@@ -265,6 +262,8 @@ def main():
 """)
         return
     
+    log_filename = None
+    
     try:
         if args.command == "parquet":
             run_parquet_mode(args)
@@ -277,17 +276,36 @@ def main():
             if not args.input:
                 parser.error("the following arguments are required: --input/-i")
                 
-            run_scan_mode(args)
-
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            os.makedirs("logs", exist_ok=True)
+            log_filename = os.path.join("logs", f"tosec_import_log_{timestamp}.log")
+            
+            run_scan_mode(args, log_filename)
     except KeyboardInterrupt:
         print("\n  Process interrupted by user.")
         return
+    except OSError as e:
+        if "Disk is full" in str(e):
+            print(f"\n\nCRITICAL STORAGE ERROR: {e}")
+            print("   The operation was stopped to prevent data corruption.")
+            print("   Please free up space and try again (use --resume).")
+            
+            logging.shutdown()
+            if args.open_log:
+                print("   Opening log file for details...")
+                open_file_with_default_app(log_filename)
+            
+            sys.exit(1)
+        else:
+            # Standard behavior for other OSErrors
+            print(f"\nOS Error: {e}")
+            sys.exit(1)
     # Critical system errors
     except (RuntimeError, MemoryError) as e:
-        print(f"\n\n  CRITICAL ERROR: System resources exhausted!")
-        print(f"   Details: {e}")
-        print(f"     Tip: Try reducing --workers (current: {args.workers}) or --batch-size (current: {args.batch_size}).")
-        print("   Exiting safely to prevent crash...")
+        print(f"\n\nCRITICAL ERROR: System resources exhausted!")
+        print(f"Details: {e}")
+        print(f"Tip: Try reducing --workers (current: {args.workers}) or --batch-size (current: {args.batch_size}).")
+        print("Exiting safely to prevent crash...")
         return
     except Exception as e:
         print(f"\n  Critical Error: {e}")
